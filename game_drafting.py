@@ -4,20 +4,42 @@ orthogonal terraria here we goooooo
 
 """
 
-import pygame
 import random
 import sys
-import math
-
-pygame.init()
-
-game_flag = True
+import pygame
 
 class player:
 	def __init__(self):
 		self.inventory = []
 		self.max_hp = 5
 		self.hp = 5
+		self.x = 3
+		self.y = 3
+		self.direction = 1
+
+
+	def turn_left(self):
+		"""  0
+		   3 + 1
+		     2
+		     """
+		self.direction = (self.direction - 1)%4
+
+
+	def turn_right(self):
+		self.direction = (self.direction + 1)%4
+
+
+	def move_forward(self):
+		if self.direction == 0:
+			self.y += 1
+		elif self.direction == 1:
+			self.x += 1
+		elif self.direction == 2:
+			self.y += -1
+		elif self.direction == 3:
+			self.x += -1
+
 
 class block:
 	def __init__(self, block_id):
@@ -26,9 +48,6 @@ class block:
 		"""
 		pass
 
-turn_count = 1
-
-matt = player()
 
 def generate_world(x_size, y_size):
 	"""
@@ -55,6 +74,7 @@ def generate_world(x_size, y_size):
 					pass
 		return False
 
+
 	world = make_blank_world()
 
 	for i in range(x_size):
@@ -70,18 +90,61 @@ def generate_world(x_size, y_size):
 	return [row[:y_size] for row in world[:x_size]]
 
 
+test_var = 1
 
-if __name__ == '__main__':
+world = generate_world(12,12)
 
-	test_var = 1
+pygame.init()
+SCREEN = pygame.display.set_mode((768,768))
+font = pygame.font.SysFont("Arial",30)
 
-	test_world = generate_world(12,12)
 
-	for i in range(len(test_world)):
-		print ' '.join(test_world[i])
-	# while game_flag == True:
-	# 	print test_var
-	# 	test_var += 1
-	# 	if test_var >= 3:
-	# 		game_flag = False
-	# 	
+exit_flag = False
+
+matt = player()	
+
+up_arrow = pygame.image.load('up_arrow.png')
+right_arrow = pygame.image.load('right_arrow.png')
+down_arrow = pygame.image.load('down_arrow.png')
+left_arrow = pygame.image.load('left_arrow.png')
+grass = pygame.image.load('grass.png')
+tree = pygame.image.load('tree.png')
+
+avatar_dict = {}
+avatar_dict[0] = up_arrow
+avatar_dict[1] = right_arrow
+avatar_dict[2] = down_arrow
+avatar_dict[3] = left_arrow
+
+while not exit_flag:
+	for event in pygame.event.get():
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				exit_flag = True
+			elif event.key == pygame.K_UP:
+				matt.move_forward()
+			elif event.key == pygame.K_LEFT:
+				matt.turn_left()
+			elif event.key == pygame.K_RIGHT:
+				matt.turn_right()
+	label = font.render('(' + str(matt.x) + ', ' + str(matt.y) + ')',1,(0,0,0))
+	SCREEN.fill((255,255,255))
+	for i in range(len(world)):
+		for j in range(len(world[0])):
+			if world[i][j] == '.':
+				SCREEN.blit(grass, (i*64, j*64))
+			elif world[i][j] == 'T':
+				SCREEN.blit(tree, (i*64, j*64))
+			else:
+				pass
+	SCREEN.blit(avatar_dict[matt.direction], (matt.x*64, (768 -matt.y*64)))
+	SCREEN.blit(label, (300,300))
+	pygame.display.flip()
+# while game_flag == True:
+# 	print test_var
+# 	test_var += 1
+# 	if test_var >= 3:
+# 		game_flag = False
+# 	
+
+# while game_flag == True:
