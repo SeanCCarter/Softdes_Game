@@ -5,7 +5,7 @@ from pickle import dump, load
 
 class World(object):
 
-	def __init__(self, seed, chunk_width = 20, chunk_height = 20):
+	def __init__(self, seed, chunk_width = 11, chunk_height = 11):
 		'''Creates the basic information about the world'''
 		#Todo: use a seed to generate the world
 		self.chunk_width = chunk_width
@@ -14,7 +14,64 @@ class World(object):
 		self.loaded_world = {}
 		self.create_world()
 
-	def load_world(self, center_chunkx, center_chunky):
+	def get_displayed_world(self, player_position, xsize, ysize):
+		self.load_world(player_position)
+		center_chunk = player_position[0]
+		
+
+	def load_world(self, player_position):
+		#Get the coordinates of the chunk the player is in
+		centerx = player_position[0]
+		centery = player_position[1]
+
+		#Player has moved up, out of current center chunk
+		if (centerx, centery + 1) not in self.loaded_world:
+			#Save all of the chunks behind you, and remove them from memory
+			for i in xrange(centerx-1, centerx+2):
+				self.loaded_world[(i, centery-2)].save_data()
+				del self.loaded_world[(i, centery-2)]
+				#Add the new row of chunks
+				if (i, centery+1) in self.chunk_list:
+					self.loaded_world[(i, centery+1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery+1), True)
+				else:
+					self.loaded_world[(i, centery+1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery+1))
+
+		#Player has moved downwards, out of current chunk
+		elif (centerx, centery - 1) not in self.loaded_world:
+			#Save all of the chunks behind you, and remove them from memory
+			for i in xrange(centerx-1, centerx+2):
+				self.loaded_world[(i, centery+2)].save_data()
+				del self.loaded_world[(i, centery+2)]
+				#Add the new row of chunks
+				if (i, centery-1) in self.chunk_list:
+					self.loaded_world[(i, centery-1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery-1), True)
+				else:
+					self.loaded_world[(i, centery-1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery-1))
+
+		#Player has moved to the right, out of current chunk
+		elif (centerx + 1, centery) not in self.loaded_world:
+			#Save all of the chunks behind you, and remove them from memory
+			for j in xrange(centery-1, centery+2):
+				self.loaded_world[(centerx-2, j)].save_data()
+				del self.loaded_world[(centerx-2, j)]
+				#Add the new row of chunks
+				if (centerx+1, j) in self.chunk_list:
+					self.loaded_world[(centerx+1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx+1, j), True)
+				else:
+					self.loaded_world[(centerx+1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx+1, j))
+
+		#Player has moved to the left, out of current chunk
+		elif (centerx - 1, centery) not in self.loaded_world:
+			#Save all of the chunks behind you, and remove them from memory
+			for j in xrange(centery-1, centery+2):
+				self.loaded_world[(centerx+2, j)].save_data()
+				del self.loaded_world[(centerx+2, j)]
+				#Add the new row of chunks
+				if (centerx-1, j) in self.chunk_list:
+					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j), True)
+				else:
+					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j))
+
 
 	def create_world(self):
 		'''creates a 3x3 series of chunks'''
@@ -50,6 +107,7 @@ class Chunk(object):
 					else:
 						chunk[i][j] = grass()
 			self.chunk = [row[:y_size+1] for row in chunk[:x_size+1]]
+			self.save_data()
 		else:
 			filename = "("+str(self.location[0])+str(self.location[1])+").txt"
 			data_file = open(filename, "r")
