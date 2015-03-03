@@ -10,3 +10,22 @@ class block(object):
 		self.walkable = walkable
 		self.destructible = destructible
 		self.drop = drop
+
+class tree(block):
+	def __init__(self):
+		block.__init__(self,'tree','tree.png',False,True,tree)
+
+
+class water(block):
+	def __init__(self):
+		block.__init__(self,'water', 'water.png', False, False)
+
+
+class grass(block):
+	def __init__(self):
+		block.__init__(self,'grass', 'grass.png', True, False)
+
+
+class dirt(block):
+	def __init__(self):
+		block.__init__(self,'dirt', 'dirt.png', True, False)
