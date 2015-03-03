@@ -40,6 +40,29 @@ class World(object):
 
 		return self.loaded_world[block_chunk].get_block(x,y)
 
+	def change_square(self, player_position, dx, dy, block):
+		'''When the player mines or places blocks, this function is used to change the world's square to the correct one'''
+		block_chunk = player_position[0] #the block where the chunk should be located
+		x = player_position[1] #x location where the block should be located
+		y = player_position[2] #y location where the block should be located
+
+		#Updates the block location based on dx and dy
+		if x + dx < 0:
+			block_chunk[0] -= 1
+			x = self.chunk_width + dx + x 
+		elif x + dx > (self.chunk_width-1):
+			block_chunk[0] += 1
+			x = (dx + x)%self.chunk_width
+		if y + dy < 0:
+			block_chunk[1] -= 1
+			y = self.chunk_height + dy + y 
+		elif y + dy > (self.chunk_height-1):
+			block_chunk[1] += 1
+			y = (dy + y)%self.chunk_height
+
+		self.loaded_world[block_chunk].change_block(x,y, block)
+
+
 	def load_world(self, player_position):
 		''' Checks the player position to see if the player is in the central chunk. If not, saves 
 			the chunks which are out of range, and loads new ones.'''
@@ -144,8 +167,13 @@ class Chunk(object):
 		dump(self.chunk)
 		data_file.close()
 
+
 	def get_block(x,y):
 		return self.chunk[x][y]
+
+
+	def change_block(x,y,block):
+		self.chunk[x][y] = block
 
 
 	#Not reallly functions for the class. Not really sure where to put it yet.
