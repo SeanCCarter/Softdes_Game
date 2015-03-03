@@ -1,0 +1,31 @@
+''''This Module contains all of the atributes and methods of the player'''
+
+
+class player(object):
+	def __init__(self):
+		self.inventory = {}
+		self.max_hp = 5
+		self.hp = 5
+		self.position = [(0,0), 6, 6]
+		self.direction = 1
+
+
+	def turn_left(self):
+		"""  0
+		   3 + 1
+		     2
+		     """
+		self.direction = (self.direction - 1)%4
+
+
+	def turn_right(self):
+		self.direction = (self.direction + 1)%4
+
+	def add_to_inventory(self, item):
+		"""
+		Adds item to the dictionary.
+		"""
+		if item in self.inventory:
+			self.inventory[item] += 1
+		else:
+			self.inventory[item] = 1
