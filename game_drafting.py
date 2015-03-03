@@ -235,7 +235,7 @@ def generate_world(x_size, y_size):
 
 	world = make_blank_world()
 
-	world[random.randint(1, x_size-1)][random.randint(1, x_size-1)] = water()
+	world[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = water()
 
 	for i in range(x_size):
 		for j in range(y_size):
