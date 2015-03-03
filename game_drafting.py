@@ -8,6 +8,40 @@ import random
 import sys
 import pygame
 
+
+class block(object):
+	def __init__(self, name, graphic, walkable=True, destructible=False, drop=[]):
+		"""
+		creates an object with a given ID. Python doesn't exactly have a case structure, so... elifs?
+		"""
+		self.name = name
+		self.graphic = pygame.image.load(graphic)
+		self.walkable = walkable
+		self.destructible = destructible
+		self.drop = drop
+
+
+class tree(block):
+	def __init__(self):
+		block.__init__(self,'tree','tree.png',False,True,tree)
+
+
+class water(block):
+	def __init__(self):
+		block.__init__(self,'water', 'water.png', False, False)
+
+
+class grass(block):
+	def __init__(self):
+		block.__init__(self,'grass', 'grass.png', True, False)
+
+
+class dirt(block):
+	def __init__(self):
+		block.__init__(self,'dirt', 'dirt.png', True, False)
+
+
+
 class player(object):
 	def __init__(self):
 		self.inventory = {}
@@ -61,6 +95,9 @@ class player(object):
 
 
 	def add_to_inventory(self, item):
+		"""
+		Adds item to the dictionary.
+		"""
 		if item in self.inventory:
 			self.inventory[item] += 1
 		else:
@@ -68,6 +105,9 @@ class player(object):
 
 
 	def remove_from_inventory(self, item):
+		"""
+		Decrements item's value in the dictionary, then removes it entirely if the value is zero.
+		"""
 		if item in self.inventory:
 			self.inventory[item] -= 1
 			if self.inventory[item] == 0:
@@ -101,22 +141,25 @@ class player(object):
 
 
 	def place(self, item):
-		if item not in self.inventory:
+		if not item in self.inventory:
 			return False
 		else:
 			if self.direction == 0:
 				if world[self.x][self.y-1].walkable:
 					world[self.x][self.y-1] = item()
+					self.remove_from_inventory(item)
 			elif self.direction == 1:
 				if world[self.x+1][self.y].walkable:
 					world[self.x+1][self.y] = item()
+					self.remove_from_inventory(item)
 			elif self.direction == 2:
 				if world[self.x][self.y+1].walkable:
 					world[self.x][self.y+1] = item()
+					self.remove_from_inventory(item)
 			elif self.direction == 3:
 				if world[self.x-1][self.y].walkable:
 					world[self.x-1][self.y] = item()
-			remove_from_inventory(item)
+					self.remove_from_inventory(item)
 
 
 class block(object):
@@ -133,7 +176,7 @@ class block(object):
 
 class tree(block):
 	def __init__(self):
-		block.__init__(self,'tree','tree.png',False,True,tree)
+		block.__init__(self, 'tree', 'tree.png', False, True, wood)
 
 
 class water(block):
@@ -151,6 +194,16 @@ class dirt(block):
 		block.__init__(self,'dirt', 'dirt.png', True, False)
 
 
+class wood(block):
+	def __init__(self):
+		block.__init__(self,'wood', 'wood.png', False, True, wood)
+
+
+class blank(block):
+	def __init__(self):
+		block.__init__(self, 'blank', 'water.png', False, False)
+
+
 
 
 def generate_world(x_size, y_size):
@@ -162,7 +215,7 @@ def generate_world(x_size, y_size):
 		"""
 		Creates an x-by-y list of lists of zeroes.
 		"""
-		blank_array = [[water() for j in range(y_size + 1)] for i in range(x_size + 1)]
+		blank_array = [[blank() for j in range(y_size + 1)] for i in range(x_size + 1)]
 		return blank_array
 
 
@@ -182,13 +235,15 @@ def generate_world(x_size, y_size):
 
 	world = make_blank_world()
 
+	world[random.randint(1, x_size-1)][random.randint(1, x_size-1)] = water()
+
 	for i in range(x_size):
 		for j in range(y_size):
 			seed = random.random()
 			if check_surroundings(i, j, 'water'):
-				if seed >= 0.8:
+				if seed >= 0.5:
 					world[i][j] = water()
-				elif seed >= 0.6:
+				elif seed >= 0.4:
 					world[i][j] = tree()
 				else:
 					world[i][j] = grass()
@@ -218,8 +273,6 @@ up_arrow = pygame.image.load('up_arrow.png')
 right_arrow = pygame.image.load('right_arrow.png')
 down_arrow = pygame.image.load('down_arrow.png')
 left_arrow = pygame.image.load('left_arrow.png')
-grass = pygame.image.load('grass.png')
-tree = pygame.image.load('tree.png')
 
 avatar_dict = {}
 avatar_dict[0] = up_arrow
@@ -238,8 +291,8 @@ while not exit_flag:
 				exit_flag = True
 			if event.key in key_to_function_dict:
 				key_to_function_dict[event.key]()
-			if event.key == pygame.K_v:
-				matt.place(tree)
+			if event.key == pygame.K_LSHIFT:
+				matt.place(wood)
 	label = font.render('(' + str(matt.x) + ', ' + str(matt.y) + ')',1,(0,0,0))
 	SCREEN.fill((255,255,255))
 	for i in range(len(world)):
