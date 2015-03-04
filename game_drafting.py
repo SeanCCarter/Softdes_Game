@@ -12,34 +12,13 @@ import pygame
 class block(object):
 	def __init__(self, name, graphic, walkable=True, destructible=False, drop=[]):
 		"""
-		creates an object with a given ID. Python doesn't exactly have a case structure, so... elifs?
+		creates an object with a given name, graphic, etc. Python doesn't exactly have a case structure, so... elifs?
 		"""
 		self.name = name
 		self.graphic = pygame.image.load(graphic)
 		self.walkable = walkable
 		self.destructible = destructible
 		self.drop = drop
-
-
-class tree(block):
-	def __init__(self):
-		block.__init__(self,'tree','tree.png',False,True,tree)
-
-
-class water(block):
-	def __init__(self):
-		block.__init__(self,'water', 'water.png', False, False)
-
-
-class grass(block):
-	def __init__(self):
-		block.__init__(self,'grass', 'grass.png', True, False)
-
-
-class dirt(block):
-	def __init__(self):
-		block.__init__(self,'dirt', 'dirt.png', True, False)
-
 
 
 class player(object):
