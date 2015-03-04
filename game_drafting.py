@@ -9,7 +9,7 @@ import sys
 import pygame
 
 
-class block(object):
+class Block(object):
 	def __init__(self, name, graphic, walkable=True, destructible=False, drop=[]):
 		"""
 		creates an object with a given name, graphic, etc. Python doesn't exactly have a case structure, so... elifs?
@@ -19,6 +19,40 @@ class block(object):
 		self.walkable = walkable
 		self.destructible = destructible
 		self.drop = drop
+
+
+
+
+class Tree(Block):
+	def __init__(self):
+		super(Tree, self).__init__('tree', 'tree.png', False, True, Wood)
+
+
+class Water(Block):
+	def __init__(self):
+		super(Water, self).__init__('water', 'water.png', False, False)
+
+
+class Grass(Block):
+	def __init__(self):
+		super(Grass, self).__init__('grass', 'grass.png', True, False)
+
+
+class Dirt(Block):
+	def __init__(self):
+		super(Dirt, self).__init__('dirt', 'dirt.png', True, False)
+
+
+class Wood(Block):
+	def __init__(self):
+		super(Wood, self).__init__('wood', 'wood.png', False, True, Wood)
+
+
+class Blank(Block):
+	def __init__(self):
+		super(Blank, self).__init__('blank', 'water.png', False, False)
+
+
 
 
 class player(object):
@@ -94,29 +128,26 @@ class player(object):
 
 
 	def check_inventory(self, item):
-		if item in self.inventory:
-			return True
-		else:
-			return False
+		return item in self.inventory
 
 
 	def mine(self):
 		if self.direction == 0:
 			if world[self.x][self.y-1].destructible:
 				self.add_to_inventory(world[self.x][self.y-1].drop)
-				world[self.x][self.y-1] = dirt()
+				world[self.x][self.y-1] = Dirt()
 		elif self.direction == 1:
 			if world[self.x+1][self.y].destructible:
 				self.add_to_inventory(world[self.x+1][self.y].drop)
-				world[self.x+1][self.y] = dirt()
+				world[self.x+1][self.y] = Dirt()
 		elif self.direction == 2:
 			if world[self.x][self.y+1].destructible:
 				self.add_to_inventory(world[self.x][self.y+1].drop)
-				world[self.x][self.y+1] = dirt()
+				world[self.x][self.y+1] = Dirt()
 		elif self.direction == 3:
 			if world[self.x-1][self.y].destructible:
 				self.add_to_inventory(world[self.x-1][self.y].drop)
-				world[self.x-1][self.y] = dirt()
+				world[self.x-1][self.y] = Dirt()
 
 
 	def place(self, item):
@@ -141,49 +172,8 @@ class player(object):
 					self.remove_from_inventory(item)
 
 
-class block(object):
-	def __init__(self, name, graphic, walkable=True, destructible=False, drop=[]):
-		"""
-		creates an object with a given ID. Python doesn't exactly have a case structure, so... elifs?
-		"""
-		self.name = name
-		self.graphic = pygame.image.load(graphic)
-		self.walkable = walkable
-		self.destructible = destructible
-		self.drop = drop
-
-
-class tree(block):
-	def __init__(self):
-		block.__init__(self, 'tree', 'tree.png', False, True, wood)
-
-
-class water(block):
-	def __init__(self):
-		block.__init__(self,'water', 'water.png', False, False)
-
-
-class grass(block):
-	def __init__(self):
-		block.__init__(self,'grass', 'grass.png', True, False)
-
-
-class dirt(block):
-	def __init__(self):
-		block.__init__(self,'dirt', 'dirt.png', True, False)
-
-
-class wood(block):
-	def __init__(self):
-		block.__init__(self,'wood', 'wood.png', False, True, wood)
-
-
-class blank(block):
-	def __init__(self):
-		block.__init__(self, 'blank', 'water.png', False, False)
-
-
-
+class World(object):
+	def __init__(self, x_)
 
 def generate_world(x_size, y_size):
 	"""
@@ -194,7 +184,7 @@ def generate_world(x_size, y_size):
 		"""
 		Creates an x-by-y list of lists of zeroes.
 		"""
-		blank_array = [[blank() for j in range(y_size + 1)] for i in range(x_size + 1)]
+		blank_array = [[Blank() for j in range(y_size + 1)] for i in range(x_size + 1)]
 		return blank_array
 
 
@@ -214,72 +204,84 @@ def generate_world(x_size, y_size):
 
 	world = make_blank_world()
 
-	world[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = water()
+	world[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water()
 
 	for i in range(x_size):
 		for j in range(y_size):
 			seed = random.random()
 			if check_surroundings(i, j, 'water'):
 				if seed >= 0.5:
-					world[i][j] = water()
+					world[i][j] = Water()
 				elif seed >= 0.4:
-					world[i][j] = tree()
+					world[i][j] = Tree()
 				else:
-					world[i][j] = grass()
+					world[i][j] = Grass()
 			elif not check_surroundings(i, j, 'tree'):
 				if seed >= 0.5:
-					world[i][j] = tree()
+					world[i][j] = Tree()
 				else:
-					world[i][j] = grass()
+					world[i][j] = Grass()
 			else:
-				world[i][j] = grass()
+				world[i][j] = Grass()
 	return [row[:y_size+1] for row in world[:x_size+1]]
 
 
-pygame.init()
+class Controller(object):
+	def __init__(self):
+		pass
 
-world = generate_world(12,12)
-
-SCREEN = pygame.display.set_mode((768,768))
-font = pygame.font.SysFont("Arial",30)
-
-
-exit_flag = False
-
-matt = player()	
-
-up_arrow = pygame.image.load('up_arrow.png')
-right_arrow = pygame.image.load('right_arrow.png')
-down_arrow = pygame.image.load('down_arrow.png')
-left_arrow = pygame.image.load('left_arrow.png')
-
-avatar_dict = {}
-avatar_dict[0] = up_arrow
-avatar_dict[1] = right_arrow
-avatar_dict[2] = down_arrow
-avatar_dict[3] = left_arrow
+	def get_inputs(self):
+		self.key_pressed = 
 
 
-key_to_function_dict = {pygame.K_UP: matt.move_forward, pygame.K_LEFT: matt.turn_left, pygame.K_RIGHT: matt.turn_right, pygame.K_DOWN: matt.move_backward, pygame.K_SPACE: matt.mine}
 
 
-while not exit_flag:
-	for event in pygame.event.get():
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
-				exit_flag = True
-			if event.key in key_to_function_dict:
-				key_to_function_dict[event.key]()
-			if event.key == pygame.K_LSHIFT:
-				matt.place(wood)
-	label = font.render('(' + str(matt.x) + ', ' + str(matt.y) + ')',1,(0,0,0))
-	SCREEN.fill((255,255,255))
-	for i in range(len(world)):
-		for j in range(len(world[0])):
-			SCREEN.blit(world[i][j].graphic, (i*64, j*64))
-	SCREEN.blit(avatar_dict[matt.direction], (matt.x*64, matt.y*64))
-	SCREEN.blit(label, (300,300))
-	pygame.display.flip()
+if __name__== '__main__':
+
+	pygame.init()
+
+	world = generate_world(12,12)
+
+	SCREEN = pygame.display.set_mode((768,768))
+	font = pygame.font.SysFont("Arial",30)
+
+
+	exit_flag = False
+
+	matt = player()	
+
+	up_arrow = pygame.image.load('up_arrow.png')
+	right_arrow = pygame.image.load('right_arrow.png')
+	down_arrow = pygame.image.load('down_arrow.png')
+	left_arrow = pygame.image.load('left_arrow.png')
+
+	avatar_dict = {}
+	avatar_dict[0] = up_arrow
+	avatar_dict[1] = right_arrow
+	avatar_dict[2] = down_arrow
+	avatar_dict[3] = left_arrow
+
+
+	key_to_function_dict = {pygame.K_UP: matt.move_forward, pygame.K_LEFT: matt.turn_left, pygame.K_RIGHT: matt.turn_right, pygame.K_DOWN: matt.move_backward, pygame.K_SPACE: matt.mine}
+
+
+	while not exit_flag:
+		for event in pygame.event.get():
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					exit_flag = True
+				if event.key in key_to_function_dict:
+					key_to_function_dict[event.key]()
+				if event.key == pygame.K_LSHIFT:
+					matt.place(Wood)
+		label = font.render('(' + str(matt.x) + ', ' + str(matt.y) + ')',1,(0,0,0))
+		SCREEN.fill((255,255,255))
+		for i in range(len(world)):
+			for j in range(len(world[0])):
+				SCREEN.blit(world[i][j].graphic, (i*64, j*64))
+		SCREEN.blit(avatar_dict[matt.direction], (matt.x*64, matt.y*64))
+		SCREEN.blit(label, (300,300))
+		pygame.display.flip()
 
 
 # while not exit_flag:
