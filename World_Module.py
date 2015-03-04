@@ -16,9 +16,9 @@ class World(object):
 		self.loaded_world = {}
 		self.create_world()
 
-	def get_displayed_world(self, player_position, xsize, ysize):
+	def get_displayed_world(self, player_position, xsize, ysize, x_range, y_range):
 		self.load_world(player_position)
-		return [[self.get_square(player_position, dx, dy).display_object() for dx in xrange(-xsize/2, xsize/2+1)] for dy in xrange(-ysize/2, ysize/2+1)]
+		return [[self.get_square(player_position, dx, dy).display_object() for dx in xrange(x_range[0], x_range[1]+1)] for dy in xrange(y_range[0], xrange[1]+1)]
 
 	def get_square(self, player_position, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''

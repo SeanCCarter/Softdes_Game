@@ -31,21 +31,23 @@ def main():
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_ESCAPE:
 					exit_flag = True
-				if event.key in key_to_function_dict:
-					key_to_function_dict[event.key](world)
-				if event.key == pygame.K_LSHIFT:
-					matt.place(wood)
 
-		label = font.render(str(player),1,(0,0,0))
-		SCREEN.fill((255,255,255))
 
-		visible_world = world.get_displayed_world(player.position, 11, 11)
+		# 		if event.key in key_to_function_dict:
+		# 			key_to_function_dict[event.key](world)
+		# 		if event.key == pygame.K_LSHIFT:
+		# 			matt.place(wood)
+
+		# label = font.render(str(player),1,(0,0,0))
+		# SCREEN.fill((255,255,255))
+
+		visible_world = world.get_displayed_world([(0,0), 5, 5], 11, 11)
 		for i in range(len(visible_world)):
-			for j in range(len(visible_world)):
+			for j in range(len(visible_world[0])):
 				SCREEN.blit(visible_world[i][j], (i*64, j*64))
-		SCREEN.blit(player.avatar(), (6*64, 6*64))
-		SCREEN.blit(label, (300,300))
-		pygame.display.flip()
+		# SCREEN.blit(player.avatar(), (6*64, 6*64))
+		# SCREEN.blit(label, (300,300))
+		# pygame.display.flip()
 
 
 if __name__ == '__main__':
