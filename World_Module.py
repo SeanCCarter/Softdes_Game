@@ -1,11 +1,13 @@
 """This Module creates the methods for creating, saving, and interacting with a World"""
 
+import random
+import pygame
 from Block_Module import *
 from pickle import dump, load
 
 class World(object):
 
-	def __init__(self, seed, chunk_width = 11, chunk_height = 11):
+	def __init__(self, seed = 0, chunk_width = 11, chunk_height = 11):
 		'''Creates the basic information about the world'''
 		#Todo: use a seed to generate the world
 		self.chunk_width = chunk_width
@@ -16,7 +18,7 @@ class World(object):
 
 	def get_displayed_world(self, player_position, xsize, ysize):
 		self.load_world(player_position)
-		return [[self.get_square(player_position, dx, dy) for dx in xrange(-xsize/2, xsize/2+1)] for dy in xrange(-ysize/2, ysize/2+1)]]
+		return [[self.get_square(player_position, dx, dy).display_object() for dx in xrange(-xsize/2, xsize/2+1)] for dy in xrange(-ysize/2, ysize/2+1)]
 
 	def get_square(self, player_position, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''
@@ -26,16 +28,16 @@ class World(object):
 
 		#Updates the block location based on dx and dy
 		if x + dx < 0:
-			block_chunk[0] -= 1
+			block_chunk = (block_chunk[0]-1, block_chunk[1])
 			x = self.chunk_width + dx + x 
 		elif x + dx > (self.chunk_width-1):
-			block_chunk[0] += 1
+			block_chunk = (block_chunk[0]+1, block_chunk[1])
 			x = (dx + x)%self.chunk_width
 		if y + dy < 0:
-			block_chunk[1] -= 1
+			block_chunk = (block_chunk[0], block_chunk[1]-1)
 			y = self.chunk_height + dy + y 
 		elif y + dy > (self.chunk_height-1):
-			block_chunk[1] += 1
+			block_chunk = (block_chunk[0], block_chunk[1]+1)
 			y = (dy + y)%self.chunk_height
 
 		return self.loaded_world[block_chunk].get_block(x,y)
@@ -48,16 +50,16 @@ class World(object):
 
 		#Updates the block location based on dx and dy
 		if x + dx < 0:
-			block_chunk[0] -= 1
+			block_chunk = (block_chunk[0]-1, block_chunk[1])
 			x = self.chunk_width + dx + x 
 		elif x + dx > (self.chunk_width-1):
-			block_chunk[0] += 1
+			block_chunk = (block_chunk[0]+1, block_chunk[1])
 			x = (dx + x)%self.chunk_width
 		if y + dy < 0:
-			block_chunk[1] -= 1
+			block_chunk = (block_chunk[0], block_chunk[1]-1)
 			y = self.chunk_height + dy + y 
 		elif y + dy > (self.chunk_height-1):
-			block_chunk[1] += 1
+			block_chunk = (block_chunk[0], block_chunk[1]+1)
 			y = (dy + y)%self.chunk_height
 
 		self.loaded_world[block_chunk].change_block(x,y, block)
@@ -117,12 +119,13 @@ class World(object):
 					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j), True)
 				else:
 					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j))
+		print "Center chunk is:", player_position[0]
 
 
 	def create_world(self):
 		'''creates a 3x3 series of chunks'''
-		for i in xrange(-3, 4):
-			for j in xrange(-3, 4):
+		for i in xrange(-1, 2):
+			for j in xrange(-1, 2):
 				self.chunk_list.append((i,j))
 				self.loaded_world[(i,j)] = Chunk(self.chunk_width, self.chunk_height, (i,j))
 
@@ -133,67 +136,68 @@ class Chunk(object):
 	def __init__(self, x_size, y_size, location, load = False):
 		#Self.location should be a tuple (x,y), although it isn't used yet.
 		self.location = location
-		chunk = make_blank_world(x_size, y_size)
+		self.chunk = make_blank_world(x_size, y_size)
+		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = water()
 		if not load:
 			for i in range(x_size):
 				for j in range(y_size):
 					seed = random.random()
-					if check_surroundings(i, j, 'water'):
+					if self.check_surroundings(i, j, 'water'):
 						if seed >= 0.8:
-							chunk[i][j] = water()
+							self.chunk[i][j] = water()
 						elif seed >= 0.6:
-							chunk[i][j] = tree()
+							self.chunk[i][j] = tree()
 						else:
-							chunk[i][j] = grass()
-					elif not check_surroundings(i, j, 'tree'):
+							self.chunk[i][j] = grass()
+					elif not self.check_surroundings(i, j, 'tree'):
 						if seed >= 0.5:
-							chunk[i][j] = tree()
+							self.chunk[i][j] = tree()
 						else:
-							chunk[i][j] = grass()
+							self.chunk[i][j] = grass()
 					else:
-						chunk[i][j] = grass()
-			self.chunk = [row[:y_size+1] for row in chunk[:x_size+1]]
+						self.chunk[i][j] = grass()
+			self.chunk = [row[:y_size+1] for row in self.chunk[:x_size+1]]
 			self.save_data()
 		else:
-			filename = "./chunks/("+str(self.location[0])+str(self.location[1])+").txt"
+			filename = "./chunks/("+str(self.location[0])+","+str(self.location[1])+").txt"
 			data_file = open(filename, "r")
 			self.chunk = load(data_file)
 			data_file.close()
 
 
 	def save_data(self):
-		filename = "("+str(self.location[0])+str(self.location[1])+").txt"
+		filename = "./chunks/("+str(self.location[0])+","+str(self.location[1])+").txt"
 		data_file = open(filename, "w")
-		dump(self.chunk)
+		dump([row for row in self.chunk], data_file)
 		data_file.close()
 
 
-	def get_block(x,y):
+	def get_block(self,x,y):
 		return self.chunk[x][y]
 
 
-	def change_block(x,y,block):
+	def change_block(self,x,y,block):
 		self.chunk[x][y] = block
 
 
-	#Not reallly functions for the class. Not really sure where to put it yet.
-	def check_surroundings(self, x_coord, y_coord, value):
+	def check_surroundings(self,x_coord, y_coord, value):
 		"""
 		If the variable world has already been defined, it checks all x and y coords within one square (aka, checks the 8 surrounding squares) for a given value. If that value is present in 1 or more squares, returns True; else, False.
 		"""
 		for i in range(3):
 			for j in range(3):
-				examining = world[x_coord - 1 + i][y_coord - 1 + j]
+				examining = self.chunk[x_coord - 1 + i][y_coord - 1 + j]
 				if examining.name == value:
 					return True
 				else:
 					pass
 		return False
 
-	def make_blank_world(self, x_size, y_size):
-		"""
-		Creates an x-by-y list of lists of zeroes.
-		"""
-		blank_array = [[block('grass','grass',False,False) for j in range(y_size + 1)] for i in range(x_size + 1)]
-		return blank_array
+#Not reallly functions for the class. Not really sure where to put it yet.
+def make_blank_world(x_size, y_size):
+	"""
+	Creates an x-by-y list of lists of zeroes.
+	"""
+	blank_array = [[block('grass','grass',False,False) for j in range(y_size + 1)] for i in range(x_size + 1)]
+	return blank_array
 

@@ -2,7 +2,7 @@
 import pygame
 from World_Module import *
 
-class player(object):
+class Player(object):
 	def __init__(self, chunk = (0,0), x = 0, y =0):
 		self.inventory = {}
 		self.max_hp = 5
@@ -16,10 +16,10 @@ class player(object):
 
 	def avatar(self):
 		'''returns a pygame image based on current direction'''
-		return avatar_dict[direction]
+		return avatar_dict[self.direction]
 
 
-	def turn_left(self):
+	def turn_left(self, world):
 		"""  0
 		   3 + 1
 		     2
@@ -27,7 +27,7 @@ class player(object):
 		self.direction = (self.direction - 1)%4
 
 
-	def turn_right(self):
+	def turn_right(self, world):
 		self.direction = (self.direction + 1)%4
 
 
@@ -70,25 +70,25 @@ class player(object):
 		y = self.position[2]
 		#Updates the player location based on dx and dy
 		if x + dx < 0:
-			block_chunk[0] -= 1
+			block_chunk = (block_chunk[0]-1, block_chunk[1])
 			x = world.chunk_width + dx + x 
 		elif x + dx > (world.chunk_width-1):
-			block_chunk[0] += 1
+			block_chunk = (block_chunk[0]+1, block_chunk[1])
 			x = (dx + x)%world.chunk_width
 		if y + dy < 0:
-			block_chunk[1] -= 1
+			block_chunk = (block_chunk[0], block_chunk[1]-1)
 			y = world.chunk_height + dy + y 
 		elif y + dy > (world.chunk_height-1):
-			block_chunk[1] += 1
+			block_chunk = (block_chunk[0], block_chunk[1]+1)
 			y = (dy + y)%world.chunk_height
 
 		self.position = [block_chunk, x, y]
 
-	def move_forwards(self, world):
+	def move_forward(self, world):
 		if self.block_in_front(world).walkable:
 			self.update_position(world, block_front_direction[self.direction][0],block_front_direction[self.direction][1])
 
-	def move_backwards(self, world):
+	def move_backward(self, world):
 		if self.block_behind(world).walkable:
 			self.update_position(world, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
 
