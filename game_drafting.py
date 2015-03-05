@@ -15,7 +15,7 @@ class Block(object):
 		creates an object with a given name, graphic, etc. Python doesn't exactly have a case structure, so... elifs?
 		"""
 		self.name = name
-		self.graphic = pygame.image.load(graphic)
+		self.graphic = pygame.image.load('graphics/' +graphic)
 		self.walkable = walkable
 		self.destructible = destructible
 		self.drop = drop
@@ -172,9 +172,6 @@ class player(object):
 					self.remove_from_inventory(item)
 
 
-class World(object):
-	def __init__(self, x_)
-
 def generate_world(x_size, y_size):
 	"""
 	Generates an x-by-y world pseudorandomly; represents it as a list of x lists of y length; [i,j].
@@ -225,13 +222,6 @@ def generate_world(x_size, y_size):
 				world[i][j] = Grass()
 	return [row[:y_size+1] for row in world[:x_size+1]]
 
-
-class Controller(object):
-	def __init__(self):
-		pass
-
-	def get_inputs(self):
-		self.key_pressed = 
 
 
 
