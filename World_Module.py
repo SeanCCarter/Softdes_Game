@@ -137,25 +137,25 @@ class Chunk(object):
 		#Self.location should be a tuple (x,y), although it isn't used yet.
 		self.location = location
 		self.chunk = make_blank_world(x_size, y_size)
-		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = water()
+		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water()
 		if not load:
 			for i in range(x_size):
 				for j in range(y_size):
 					seed = random.random()
 					if self.check_surroundings(i, j, 'water'):
 						if seed >= 0.8:
-							self.chunk[i][j] = water()
+							self.chunk[i][j] = Water()
 						elif seed >= 0.6:
-							self.chunk[i][j] = tree()
+							self.chunk[i][j] = Tree()
 						else:
-							self.chunk[i][j] = grass()
+							self.chunk[i][j] = Grass()
 					elif not self.check_surroundings(i, j, 'tree'):
 						if seed >= 0.5:
-							self.chunk[i][j] = tree()
+							self.chunk[i][j] = Tree()
 						else:
-							self.chunk[i][j] = grass()
+							self.chunk[i][j] = Grass()
 					else:
-						self.chunk[i][j] = grass()
+						self.chunk[i][j] = Grass()
 			self.chunk = [row[:y_size+1] for row in self.chunk[:x_size+1]]
 			self.save_data()
 		else:
@@ -196,8 +196,8 @@ class Chunk(object):
 #Not reallly functions for the class. Not really sure where to put it yet.
 def make_blank_world(x_size, y_size):
 	"""
-	Creates an x-by-y list of lists of zeroes.
+	Creates an x-by-y list of lists blank objects.
 	"""
-	blank_array = [[block('grass','grass',False,False) for j in range(y_size + 1)] for i in range(x_size + 1)]
+	blank_array = [[Blank() for j in range(y_size + 1)] for i in range(x_size + 1)]
 	return blank_array
 

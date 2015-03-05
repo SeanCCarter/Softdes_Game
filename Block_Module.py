@@ -12,7 +12,7 @@ class Block(object):
 		Defines the Block objecct type.
 		"""
 		self.name = name
-		self.graphic = pygame.image.load(graphic)
+		self.graphic = pygame.image.load('graphics/' + graphic)
 		self.walkable = walkable
 		self.destructible = destructible
 		self.drop = drop
@@ -42,21 +42,3 @@ def Wood():
 
 def Blank():
 	return Block('blank', 'water.png', False, False)
-
-
-
-pygame.init()
-SCREEN = pygame.display.set_mode((768,768))
-
-test_tree = Tree()
-print test_tree.graphic
-exit_flag = False
-
-while not exit_flag:
-	for event in pygame.event.get():
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
-				exit_flag = True
-		for i in range(12):
-			for j in range(12):
-				SCREEN.blit(test_tree.graphic, (64*i, 64*j))
