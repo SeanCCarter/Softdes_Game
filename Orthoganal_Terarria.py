@@ -24,6 +24,13 @@ def main():
 	player = Player((0,0), 0, 0)
 	key_to_function_dict = {pygame.K_UP: player.move_forward, pygame.K_LEFT: player.turn_left, pygame.K_RIGHT: player.turn_right, pygame.K_DOWN: player.move_backward}
 	
+	for item in world.loaded_world[(0,0)].chunk:
+		for block in item:
+			print block
+	for item in world.loaded_world[(-1,1)].chunk:
+		for block in item:
+			print block
+
 	exit_flag = False
 	while not exit_flag:
 		for event in pygame.event.get():
@@ -34,6 +41,10 @@ def main():
 
 				if event.key in key_to_function_dict:
 					key_to_function_dict[event.key](world)
+				if event.key == pygame.K_p:
+					displayed_blocks = [[world.get_square(player.position, dx, dy).name for dx in xrange(-5,5)] for dy in xrange(-5,5)]
+					for row in displayed_blocks:
+						print row
 		# 		if event.key == pygame.K_LSHIFT:
 		# 			matt.place(wood)
 

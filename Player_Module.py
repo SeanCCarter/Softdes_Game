@@ -75,10 +75,10 @@ class Player(object):
 		if self.block_behind(world).walkable:
 			self.update_position(world, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
 
-up_arrow = pygame.image.load('up_arrow.png')
-right_arrow = pygame.image.load('right_arrow.png')
-down_arrow = pygame.image.load('down_arrow.png')
-left_arrow = pygame.image.load('left_arrow.png')
+up_arrow = pygame.image.load('./graphics/up_arrow.png')
+right_arrow = pygame.image.load('./graphics/right_arrow.png')
+down_arrow = pygame.image.load('./graphics/down_arrow.png')
+left_arrow = pygame.image.load('./graphics/left_arrow.png')
 
 avatar_dict = {}
 avatar_dict[0] = up_arrow
@@ -86,7 +86,7 @@ avatar_dict[1] = right_arrow
 avatar_dict[2] = down_arrow
 avatar_dict[3] = left_arrow
 block_front_direction = {}
-block_front_direction[0] = (0,1)
+block_front_direction[0] = (0,-1)
 block_front_direction[1] = (1,0)
-block_front_direction[2] = (0,-1)
+block_front_direction[2] = (0,1)
 block_front_direction[3] = (-1,0)
