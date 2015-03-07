@@ -43,7 +43,7 @@ def main():
 		visible_world = world.get_displayed_world(player.position, [-5,5], [-5,5])
 		for i in range(len(visible_world)):
 			for j in range(len(visible_world[0])):
-				SCREEN.blit(visible_world[i][j], (i*64, j*64))
+				SCREEN.blit(visible_world[i][j], (j*64, i*64))
 		SCREEN.blit(player.avatar(), (5*64, 5*64))
 		SCREEN.blit(label, (300,300))
 		pygame.display.flip()

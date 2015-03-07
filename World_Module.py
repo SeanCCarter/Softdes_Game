@@ -3,6 +3,7 @@
 import random
 import pygame
 from Block_Module import *
+from Misc_Module import *
 from pickle import dump, load
 
 class World(object):
@@ -24,45 +25,22 @@ class World(object):
 
 	def get_square(self, player_position, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''
+
+		position = relative_position(player_position, dx, dy, self.chunk_width, self.chunk_height)
 		block_chunk = player_position[0] #the block where the chunk should be located
 		x = player_position[1] #x location where the block should be located
 		y = player_position[2] #y location where the block should be located
 
-		#Updates the block location based on dx and dy
-		if x + dx < 0:
-			block_chunk = (block_chunk[0]-1, block_chunk[1])
-			x = self.chunk_width + dx + x 
-		elif x + dx > (self.chunk_width-1):
-			block_chunk = (block_chunk[0]+1, block_chunk[1])
-			x = (dx + x)%self.chunk_width
-		if y + dy < 0:
-			block_chunk = (block_chunk[0], block_chunk[1]-1)
-			y = self.chunk_height + dy + y 
-		elif y + dy > (self.chunk_height-1):
-			block_chunk = (block_chunk[0], block_chunk[1]+1)
-			y = (dy + y)%self.chunk_height
 		#print 'get_square did something!'
 		return self.loaded_world[block_chunk].get_block(x,y)
 
 	def change_square(self, player_position, dx, dy, block):
 		'''When the player mines or places blocks, this function is used to change the world's square to the correct one'''
+
+		position = relative_position(player_position, dx, dy, self.chunk_width, self.chunk_height)
 		block_chunk = player_position[0] #the block where the chunk should be located
 		x = player_position[1] #x location where the block should be located
 		y = player_position[2] #y location where the block should be located
-
-		#Updates the block location based on dx and dy
-		if x + dx < 0:
-			block_chunk = (block_chunk[0]-1, block_chunk[1])
-			x = self.chunk_width + dx + x 
-		elif x + dx > (self.chunk_width-1):
-			block_chunk = (block_chunk[0]+1, block_chunk[1])
-			x = (dx + x)%self.chunk_width
-		if y + dy < 0:
-			block_chunk = (block_chunk[0], block_chunk[1]-1)
-			y = self.chunk_height + dy + y 
-		elif y + dy > (self.chunk_height-1):
-			block_chunk = (block_chunk[0], block_chunk[1]+1)
-			y = (dy + y)%self.chunk_height
 
 		self.loaded_world[block_chunk].change_block(x,y, block)
 
@@ -141,8 +119,8 @@ class Chunk(object):
 		self.chunk = make_blank_world(x_size, y_size)
 		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water()
 		if not load:
-			for i in range(x_size):
-				for j in range(y_size):
+			for i in range(x_size-1):
+				for j in range(y_size-1):
 					seed = random.random()
 					if self.check_surroundings(i, j, 'water'):
 						if seed >= 0.8:
@@ -191,8 +169,6 @@ class Chunk(object):
 				examining = self.chunk[x_coord - 1 + i][y_coord - 1 + j]
 				if examining.name == value:
 					return True
-				else:
-					pass
 		return False
 
 #Not reallly functions for the class. Not really sure where to put it yet.

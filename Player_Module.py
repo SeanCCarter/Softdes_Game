@@ -65,24 +65,7 @@ class Player(object):
 
 	def update_position(self, world, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''
-		block_chunk = self.position[0] #the current chunk
-		x = self.position[1]
-		y = self.position[2]
-		#Updates the player location based on dx and dy
-		if x + dx < 0:
-			block_chunk = (block_chunk[0]-1, block_chunk[1])
-			x = world.chunk_width + dx + x 
-		elif x + dx > (world.chunk_width-1):
-			block_chunk = (block_chunk[0]+1, block_chunk[1])
-			x = (dx + x)%world.chunk_width
-		if y + dy < 0:
-			block_chunk = (block_chunk[0], block_chunk[1]-1)
-			y = world.chunk_height + dy + y 
-		elif y + dy > (world.chunk_height-1):
-			block_chunk = (block_chunk[0], block_chunk[1]+1)
-			y = (dy + y)%world.chunk_height
-
-		self.position = [block_chunk, x, y]
+		self.position = relative_position(self.position, dx, dy, world.chunk_width, world.chunk_height)
 
 	def move_forward(self, world):
 		if self.block_in_front(world).walkable:
