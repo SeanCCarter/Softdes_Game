@@ -12,12 +12,16 @@ class Block(object):
 		Defines the Block objecct type.
 		"""
 		self.name = name
-		self.graphic = pygame.image.load('graphics/' + graphic)
+		self.graphic = graphic
 		self.walkable = walkable
 		self.destructible = destructible
 		self.drop = drop
 
+	def __str__(self):
+		return self.name
 
+	def loadgraphic(self):
+		return pygame.image.load('graphics/' + self.graphic)
 
 
 

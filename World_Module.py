@@ -16,9 +16,11 @@ class World(object):
 		self.loaded_world = {}
 		self.create_world()
 
-	def get_displayed_world(self, player_position, xsize, ysize, x_range, y_range):
+	def get_displayed_world(self, player_position, dx_range, dy_range):
 		self.load_world(player_position)
-		return [[self.get_square(player_position, dx, dy).display_object() for dx in xrange(x_range[0], x_range[1]+1)] for dy in xrange(y_range[0], xrange[1]+1)]
+		#print 'get_displayed_world did something'
+		return [[self.get_square(player_position, dx, dy).loadgraphic() for dx in xrange(dx_range[0], dx_range[1]+1)] for dy in xrange(dy_range[0], dy_range[1]+1)]
+		#return [[self.get_square(player_position, dx, dy) for dx in xrange(x_range[0], x_range[1]+1)] for dy in xrange(y_range[0], xrange[1]+1)]
 
 	def get_square(self, player_position, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''
@@ -39,7 +41,7 @@ class World(object):
 		elif y + dy > (self.chunk_height-1):
 			block_chunk = (block_chunk[0], block_chunk[1]+1)
 			y = (dy + y)%self.chunk_height
-
+		#print 'get_square did something!'
 		return self.loaded_world[block_chunk].get_block(x,y)
 
 	def change_square(self, player_position, dx, dy, block):
@@ -119,7 +121,7 @@ class World(object):
 					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j), True)
 				else:
 					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j))
-		print "Center chunk is:", player_position[0]
+		#print "Center chunk is: " + str(player_position[0][0]) + ',' + str(player_position[0][1])
 
 
 	def create_world(self):
@@ -198,6 +200,6 @@ def make_blank_world(x_size, y_size):
 	"""
 	Creates an x-by-y list of lists blank objects.
 	"""
-	blank_array = [[Blank() for j in range(y_size + 1)] for i in range(x_size + 1)]
+	blank_array = [[Blank() for j in range(y_size)] for i in range(x_size)]
 	return blank_array
 
