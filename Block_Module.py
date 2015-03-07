@@ -7,7 +7,7 @@ import pygame
 
 
 class Block(object):
-	def __init__(self, name, graphic, walkable=True, destructible=False, drop=[]):
+	def __init__(self, name, graphic, walkable=True, destructible=False, drop=None):
 		"""
 		Defines the Block objecct type.
 		"""

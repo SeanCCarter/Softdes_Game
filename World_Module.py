@@ -57,30 +57,30 @@ class World(object):
 
 		if player_chunky > center_chunky:
 			for x in xrange(center_chunkx-1, center_chunkx+2):
-				loaded_world[(x, center_chunky-1)].save_data()
-				del(loaded_world[(x, center_chunky-1)])
-				loaded_world[(x, center_chunky+2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky+2))
+				self.loaded_world[(x, center_chunky-1)].save_data()
+				del(self.loaded_world[(x, center_chunky-1)])
+				self.loaded_world[(x, center_chunky+2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky+2))
 			self.center_chunk[1] += 1
 
-		elif player_chunky > center_chunky:
+		elif player_chunky < center_chunky:
 			for x in xrange(center_chunkx-1, center_chunkx+2):
-				loaded_world[(x, center_chunky+1)].save_data()
-				del(loaded_world[(x, center_chunky+1)])
-				loaded_world[(x, center_chunky-2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky-2))
+				self.loaded_world[(x, center_chunky+1)].save_data()
+				del(self.loaded_world[(x, center_chunky+1)])
+				self.loaded_world[(x, center_chunky-2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky-2))
 			self.center_chunk[1] -= 1
 
 		elif player_chunkx > center_chunkx:
 			for y in xrange(center_chunky-1, center_chunky+2):
-				loaded_world[(center_chunkx+1,y)].save_data()
-				del loaded_world[(center_chunkx+1,y)]
-				loaded_world[(center_chunkx+2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx+2, y))
+				self.loaded_world[(center_chunkx-1,y)].save_data()
+				del self.loaded_world[(center_chunkx-1,y)]
+				self.loaded_world[(center_chunkx+2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx+2, y))
 			self.center_chunk[0] += 1
 
 		elif player_chunkx < center_chunkx:
 			for y in xrange(center_chunky-1, center_chunky+2):
-				loaded_world[(center_chunkx-1,y)].save_data()
-				del loaded_world[(center_chunkx-1,y)]
-				loaded_world[(center_chunkx-2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx-2, y))
+				self.loaded_world[(center_chunkx+1,y)].save_data()
+				del self.loaded_world[(center_chunkx+1,y)]
+				self.loaded_world[(center_chunkx-2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx-2, y))
 			self.center_chunk[0] -= 1
 
 
@@ -101,12 +101,12 @@ class World(object):
 class Chunk(object):
 	'''A chunk is an x_size by y_size array of block values'''
 
-	def __init__(self, x_size, y_size, location, load = False):
+	def __init__(self, x_size, y_size, location, loadable = False):
 		#Self.location should be a tuple (x,y), although it isn't used yet.
 		self.location = location
 		self.chunk = make_blank_world(x_size, y_size)
 		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water()
-		if not load:
+		if not loadable:
 			for i in range(x_size-1):
 				for j in range(y_size-1):
 					seed = random.random()

@@ -75,6 +75,19 @@ class Player(object):
 		if self.block_behind(world).walkable:
 			self.update_position(world, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
 
+	def mine(self, world):
+		if self.block_in_front(world).destructible:
+			self.add_to_inventory(self.block_in_front(world).drop)
+			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], Dirt())
+
+	def place(self, world, item):
+		if item not in self.inventory:
+			return False
+		else:
+			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], item())
+			self.remove_from_inventory(item)
+
+
 up_arrow = pygame.image.load('./graphics/up_arrow.png')
 right_arrow = pygame.image.load('./graphics/right_arrow.png')
 down_arrow = pygame.image.load('./graphics/down_arrow.png')
