@@ -3,6 +3,7 @@
 import random
 import pygame
 from Block_Module import *
+from Misc_Module import *
 from pickle import dump, load
 
 class World(object):
@@ -12,55 +13,35 @@ class World(object):
 		#Todo: use a seed to generate the world
 		self.chunk_width = chunk_width
 		self.chunk_height = chunk_height
+		self.center_chunk = [0,0]
 		self.chunk_list = []
 		self.loaded_world = {}
 		self.create_world()
 
-	def get_displayed_world(self, player_position, xsize, ysize, x_range, y_range):
+	def get_displayed_world(self, player_position, dx_range, dy_range):
 		self.load_world(player_position)
-		return [[self.get_square(player_position, dx, dy).display_object() for dx in xrange(x_range[0], x_range[1]+1)] for dy in xrange(y_range[0], xrange[1]+1)]
+		#print 'get_displayed_world did something'
+		return [[self.get_square(player_position, dx, dy).loadgraphic() for dx in xrange(dx_range[0], dx_range[1]+1)] for dy in xrange(dy_range[0], dy_range[1]+1)]
+		#return [[self.get_square(player_position, dx, dy) for dx in xrange(x_range[0], x_range[1]+1)] for dy in xrange(y_range[0], xrange[1]+1)]
 
 	def get_square(self, player_position, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''
-		block_chunk = player_position[0] #the block where the chunk should be located
-		x = player_position[1] #x location where the block should be located
-		y = player_position[2] #y location where the block should be located
 
-		#Updates the block location based on dx and dy
-		if x + dx < 0:
-			block_chunk = (block_chunk[0]-1, block_chunk[1])
-			x = self.chunk_width + dx + x 
-		elif x + dx > (self.chunk_width-1):
-			block_chunk = (block_chunk[0]+1, block_chunk[1])
-			x = (dx + x)%self.chunk_width
-		if y + dy < 0:
-			block_chunk = (block_chunk[0], block_chunk[1]-1)
-			y = self.chunk_height + dy + y 
-		elif y + dy > (self.chunk_height-1):
-			block_chunk = (block_chunk[0], block_chunk[1]+1)
-			y = (dy + y)%self.chunk_height
+		position = relative_position(player_position, dx, dy, self.chunk_width, self.chunk_height)
+		block_chunk = position[0] #the block where the chunk should be located
+		x = position[1] #x location where the block should be located
+		y = position[2] #y location where the block should be located
 
+		#print 'get_square did something!'
 		return self.loaded_world[block_chunk].get_block(x,y)
 
 	def change_square(self, player_position, dx, dy, block):
 		'''When the player mines or places blocks, this function is used to change the world's square to the correct one'''
-		block_chunk = player_position[0] #the block where the chunk should be located
-		x = player_position[1] #x location where the block should be located
-		y = player_position[2] #y location where the block should be located
 
-		#Updates the block location based on dx and dy
-		if x + dx < 0:
-			block_chunk = (block_chunk[0]-1, block_chunk[1])
-			x = self.chunk_width + dx + x 
-		elif x + dx > (self.chunk_width-1):
-			block_chunk = (block_chunk[0]+1, block_chunk[1])
-			x = (dx + x)%self.chunk_width
-		if y + dy < 0:
-			block_chunk = (block_chunk[0], block_chunk[1]-1)
-			y = self.chunk_height + dy + y 
-		elif y + dy > (self.chunk_height-1):
-			block_chunk = (block_chunk[0], block_chunk[1]+1)
-			y = (dy + y)%self.chunk_height
+		position = relative_position(player_position, dx, dy, self.chunk_width, self.chunk_height)
+		block_chunk = position[0] #the block where the chunk should be located
+		x = position[1] #x location where the block should be located
+		y = position[2] #y location where the block should be located
 
 		self.loaded_world[block_chunk].change_block(x,y, block)
 
@@ -69,57 +50,38 @@ class World(object):
 		''' Checks the player position to see if the player is in the central chunk. If not, saves 
 			the chunks which are out of range, and loads new ones.'''
 		#Get the coordinates of the chunk the player is in
-		centerx = player_position[0][0]
-		centery = player_position[0][1]
+		player_chunkx = player_position[0][0]
+		player_chunky = player_position[0][1]
+		center_chunkx = self.center_chunk[0]
+		center_chunky = self.center_chunk[1]
 
-		#Player has moved up, out of current center chunk
-		if (centerx, centery + 1) not in self.loaded_world:
-			#Save all of the chunks behind you, and remove them from memory
-			for i in xrange(centerx-1, centerx+2):
-				self.loaded_world[(i, centery-2)].save_data()
-				del self.loaded_world[(i, centery-2)]
-				#Add the new row of chunks
-				if (i, centery+1) in self.chunk_list:
-					self.loaded_world[(i, centery+1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery+1), True)
-				else:
-					self.loaded_world[(i, centery+1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery+1))
+		if player_chunky > center_chunky:
+			for x in xrange(center_chunkx-1, center_chunkx+2):
+				self.loaded_world[(x, center_chunky-1)].save_data()
+				del(self.loaded_world[(x, center_chunky-1)])
+				self.loaded_world[(x, center_chunky+2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky+2))
+			self.center_chunk[1] += 1
 
-		#Player has moved downwards, out of current chunk
-		elif (centerx, centery - 1) not in self.loaded_world:
-			#Save all of the chunks behind you, and remove them from memory
-			for i in xrange(centerx-1, centerx+2):
-				self.loaded_world[(i, centery+2)].save_data()
-				del self.loaded_world[(i, centery+2)]
-				#Add the new row of chunks
-				if (i, centery-1) in self.chunk_list:
-					self.loaded_world[(i, centery-1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery-1), True)
-				else:
-					self.loaded_world[(i, centery-1)] = Chunk(self.chunk_width, self.chunk_height, (i, centery-1))
+		elif player_chunky < center_chunky:
+			for x in xrange(center_chunkx-1, center_chunkx+2):
+				self.loaded_world[(x, center_chunky+1)].save_data()
+				del(self.loaded_world[(x, center_chunky+1)])
+				self.loaded_world[(x, center_chunky-2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky-2))
+			self.center_chunk[1] -= 1
 
-		#Player has moved to the right, out of current chunk
-		elif (centerx + 1, centery) not in self.loaded_world:
-			#Save all of the chunks behind you, and remove them from memory
-			for j in xrange(centery-1, centery+2):
-				self.loaded_world[(centerx-2, j)].save_data()
-				del self.loaded_world[(centerx-2, j)]
-				#Add the new row of chunks
-				if (centerx+1, j) in self.chunk_list:
-					self.loaded_world[(centerx+1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx+1, j), True)
-				else:
-					self.loaded_world[(centerx+1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx+1, j))
+		elif player_chunkx > center_chunkx:
+			for y in xrange(center_chunky-1, center_chunky+2):
+				self.loaded_world[(center_chunkx-1,y)].save_data()
+				del self.loaded_world[(center_chunkx-1,y)]
+				self.loaded_world[(center_chunkx+2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx+2, y))
+			self.center_chunk[0] += 1
 
-		#Player has moved to the left, out of current chunk
-		elif (centerx - 1, centery) not in self.loaded_world:
-			#Save all of the chunks behind you, and remove them from memory
-			for j in xrange(centery-1, centery+2):
-				self.loaded_world[(centerx+2, j)].save_data()
-				del self.loaded_world[(centerx+2, j)]
-				#Add the new row of chunks
-				if (centerx-1, j) in self.chunk_list:
-					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j), True)
-				else:
-					self.loaded_world[(centerx-1, j)] = Chunk(self.chunk_width, self.chunk_height, (centerx-1, j))
-		print "Center chunk is:", player_position[0]
+		elif player_chunkx < center_chunkx:
+			for y in xrange(center_chunky-1, center_chunky+2):
+				self.loaded_world[(center_chunkx+1,y)].save_data()
+				del self.loaded_world[(center_chunkx+1,y)]
+				self.loaded_world[(center_chunkx-2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx-2, y))
+			self.center_chunk[0] -= 1
 
 
 	def create_world(self):
@@ -129,18 +91,24 @@ class World(object):
 				self.chunk_list.append((i,j))
 				self.loaded_world[(i,j)] = Chunk(self.chunk_width, self.chunk_height, (i,j))
 
+	def load_chunk(self, x_size, y_size, location):
+		if location in self.chunk_list:
+			return Chunk(x_size, y_size, location, True)
+		else:
+			return Chunk(x_size, y_size, location)
+
 
 class Chunk(object):
 	'''A chunk is an x_size by y_size array of block values'''
 
-	def __init__(self, x_size, y_size, location, load = False):
+	def __init__(self, x_size, y_size, location, loadable = False):
 		#Self.location should be a tuple (x,y), although it isn't used yet.
 		self.location = location
 		self.chunk = make_blank_world(x_size, y_size)
 		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water()
-		if not load:
-			for i in range(x_size):
-				for j in range(y_size):
+		if not loadable:
+			for i in range(x_size-1):
+				for j in range(y_size-1):
 					seed = random.random()
 					if self.check_surroundings(i, j, 'water'):
 						if seed >= 0.8:
@@ -189,8 +157,6 @@ class Chunk(object):
 				examining = self.chunk[x_coord - 1 + i][y_coord - 1 + j]
 				if examining.name == value:
 					return True
-				else:
-					pass
 		return False
 
 #Not reallly functions for the class. Not really sure where to put it yet.
@@ -198,6 +164,6 @@ def make_blank_world(x_size, y_size):
 	"""
 	Creates an x-by-y list of lists blank objects.
 	"""
-	blank_array = [[Blank() for j in range(y_size + 1)] for i in range(x_size + 1)]
+	blank_array = [[Blank() for j in range(y_size)] for i in range(x_size)]
 	return blank_array
 

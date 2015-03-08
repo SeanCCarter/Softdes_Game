@@ -65,24 +65,7 @@ class Player(object):
 
 	def update_position(self, world, dx, dy):
 		'''Returns the block x distance and y distance from the player's square'''
-		block_chunk = self.position[0] #the current chunk
-		x = self.position[1]
-		y = self.position[2]
-		#Updates the player location based on dx and dy
-		if x + dx < 0:
-			block_chunk = (block_chunk[0]-1, block_chunk[1])
-			x = world.chunk_width + dx + x 
-		elif x + dx > (world.chunk_width-1):
-			block_chunk = (block_chunk[0]+1, block_chunk[1])
-			x = (dx + x)%world.chunk_width
-		if y + dy < 0:
-			block_chunk = (block_chunk[0], block_chunk[1]-1)
-			y = world.chunk_height + dy + y 
-		elif y + dy > (world.chunk_height-1):
-			block_chunk = (block_chunk[0], block_chunk[1]+1)
-			y = (dy + y)%world.chunk_height
-
-		self.position = [block_chunk, x, y]
+		self.position = relative_position(self.position, dx, dy, world.chunk_width, world.chunk_height)
 
 	def move_forward(self, world):
 		if self.block_in_front(world).walkable:
@@ -92,10 +75,23 @@ class Player(object):
 		if self.block_behind(world).walkable:
 			self.update_position(world, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
 
-up_arrow = pygame.image.load('up_arrow.png')
-right_arrow = pygame.image.load('right_arrow.png')
-down_arrow = pygame.image.load('down_arrow.png')
-left_arrow = pygame.image.load('left_arrow.png')
+	def mine(self, world):
+		if self.block_in_front(world).destructible:
+			self.add_to_inventory(self.block_in_front(world).drop)
+			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], Dirt())
+
+	def place(self, world, item):
+		if item not in self.inventory:
+			return False
+		else:
+			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], item())
+			self.remove_from_inventory(item)
+
+
+up_arrow = pygame.image.load('./graphics/up_arrow.png')
+right_arrow = pygame.image.load('./graphics/right_arrow.png')
+down_arrow = pygame.image.load('./graphics/down_arrow.png')
+left_arrow = pygame.image.load('./graphics/left_arrow.png')
 
 avatar_dict = {}
 avatar_dict[0] = up_arrow
@@ -103,7 +99,7 @@ avatar_dict[1] = right_arrow
 avatar_dict[2] = down_arrow
 avatar_dict[3] = left_arrow
 block_front_direction = {}
-block_front_direction[0] = (0,1)
+block_front_direction[0] = (0,-1)
 block_front_direction[1] = (1,0)
-block_front_direction[2] = (0,-1)
+block_front_direction[2] = (0,1)
 block_front_direction[3] = (-1,0)
