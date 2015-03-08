@@ -1,4 +1,6 @@
-''''This Module contains all of the atributes and methods of the player'''
+"""
+This Module contains all of the atributes and methods of the player
+"""
 import pygame
 from World_Module import *
 
@@ -62,28 +64,37 @@ class Player(object):
 		else:
 			return False
 
+
 	def block_in_front(self, world):
 		return world.get_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1])
+
 
 	def block_behind(self, world):
 		return world.get_square(self.position, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
 
+
 	def update_position(self, world, dx, dy):
-		'''Returns the block x distance and y distance from the player's square'''
+		"""
+		Returns the block x distance and y distance from the player's square
+		"""
 		self.position = relative_position(self.position, dx, dy, world.chunk_width, world.chunk_height)
+
 
 	def move_forward(self, world):
 		if self.block_in_front(world).walkable:
 			self.update_position(world, block_front_direction[self.direction][0],block_front_direction[self.direction][1])
 
+
 	def move_backward(self, world):
 		if self.block_behind(world).walkable:
 			self.update_position(world, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
+
 
 	def mine(self, world):
 		if self.block_in_front(world).destructible:
 			self.add_to_inventory(self.block_in_front(world).drop)
 			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], Dirt())
+
 
 	def place(self, world, item):
 		if item not in self.inventory:
