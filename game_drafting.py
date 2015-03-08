@@ -150,7 +150,7 @@ class player(object):
 				world[self.x-1][self.y] = Dirt()
 
 
-	def place(self, item):
+	def place(self, item=Wood):
 		if not item in self.inventory:
 			return False
 		else:
@@ -252,7 +252,7 @@ if __name__== '__main__':
 	avatar_dict[3] = left_arrow
 
 
-	key_to_function_dict = {pygame.K_UP: matt.move_forward, pygame.K_LEFT: matt.turn_left, pygame.K_RIGHT: matt.turn_right, pygame.K_DOWN: matt.move_backward, pygame.K_SPACE: matt.mine}
+	key_to_function_dict = {pygame.K_UP: matt.move_forward, pygame.K_LEFT: matt.turn_left, pygame.K_RIGHT: matt.turn_right, pygame.K_DOWN: matt.move_backward, pygame.K_SPACE: matt.mine, pygame.K_LSHIFT: matt.place}
 
 
 	while not exit_flag:
@@ -262,8 +262,6 @@ if __name__== '__main__':
 					exit_flag = True
 				if event.key in key_to_function_dict:
 					key_to_function_dict[event.key]()
-				if event.key == pygame.K_LSHIFT:
-					matt.place(Wood)
 		label = font.render('(' + str(matt.x) + ', ' + str(matt.y) + ')',1,(0,0,0))
 		SCREEN.fill((255,255,255))
 		for i in range(len(world)):

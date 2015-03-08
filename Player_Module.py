@@ -9,14 +9,16 @@ class Player(object):
 		self.hp = 5
 		self.position = [chunk, x, y]
 		self.direction = 1
+		self.avatar_up = pygame.image.load('graphics/up_arrow.png')
+		self.avatar_right = pygame.image.load('graphics/right_arrow.png')
+		self.avatar_down = pygame.image.load('graphics/down_arrow.png')
+		self.avatar_left = pygame.image.load('left_arrow.png')
+		self.direction_to_graphic = {0: self.avatar_up, 1: self.avatar_right, 2: self.avatar_down, 3: self.avatar_left}
+		self.current_avatar = self.direction_to_graphic[self.direction]
+
 
 	def __str__(self):
 		return "("+str(self.position[0][0])+","+str(self.position[0][1])+")"+" "+str(self.position[1])+","+str(self.position[2])
-
-
-	def avatar(self):
-		'''returns a pygame image based on current direction'''
-		return avatar_dict[self.direction]
 
 
 	def turn_left(self, world):
@@ -25,10 +27,13 @@ class Player(object):
 		     2
 		     """
 		self.direction = (self.direction - 1)%4
+		self.current_avatar = self.direction_to_graphic[self.direction]
+
 
 
 	def turn_right(self, world):
 		self.direction = (self.direction + 1)%4
+		self.current_avatar = self.direction_to_graphic[self.direction]
 
 
 	def add_to_inventory(self, item):
@@ -88,16 +93,20 @@ class Player(object):
 			self.remove_from_inventory(item)
 
 
-up_arrow = pygame.image.load('./graphics/up_arrow.png')
-right_arrow = pygame.image.load('./graphics/right_arrow.png')
-down_arrow = pygame.image.load('./graphics/down_arrow.png')
-left_arrow = pygame.image.load('./graphics/left_arrow.png')
 
-avatar_dict = {}
-avatar_dict[0] = up_arrow
-avatar_dict[1] = right_arrow
-avatar_dict[2] = down_arrow
-avatar_dict[3] = left_arrow
+
+
+
+# up_arrow = pygame.image.load('./graphics/up_arrow.png')
+# right_arrow = pygame.image.load('./graphics/right_arrow.png')
+# down_arrow = pygame.image.load('./graphics/down_arrow.png')
+# left_arrow = pygame.image.load('./graphics/left_arrow.png')
+
+# # avatar_dict = {}
+# # avatar_dict[0] = up_arrow
+# # avatar_dict[1] = right_arrow
+# # avatar_dict[2] = down_arrow
+# # avatar_dict[3] = left_arrow
 block_front_direction = {}
 block_front_direction[0] = (0,-1)
 block_front_direction[1] = (1,0)
