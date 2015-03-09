@@ -24,9 +24,12 @@ class Player(object):
 
 
 	def turn_left(self, world):
-		"""  0
+		"""  Rotates character counter-clockwise.
+			 The direction works like this:
+			 0
 		   3 + 1
 		     2
+		     It's just modular arithmatic. If you add 4, it stays the same.
 		     """
 		self.direction = (self.direction - 1)%4
 		self.current_avatar = self.direction_to_graphic[self.direction]
@@ -34,6 +37,7 @@ class Player(object):
 
 
 	def turn_right(self, world):
+		'''Rotates character clockwise'''
 		self.direction = (self.direction + 1)%4
 		self.current_avatar = self.direction_to_graphic[self.direction]
 
@@ -91,22 +95,28 @@ class Player(object):
 
 
 	def mine(self, world):
+		'''Removes whatever block is in front of the player, and replaces it with dirt'''
 		if self.block_in_front(world).destructible:
 			self.add_to_inventory(self.block_in_front(world).drop)
 			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], Dirt())
 
 
 	def place(self, world, item):
+		'''Changes a block in the world to one that the player carries'''
 		if item not in self.inventory:
 			return False
 		else:
 			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], item())
 			self.remove_from_inventory(item)
 
-
-
-
-
+#These directions encode the dx and dy from the player.
+#In otherwords, whether to add a positive or negative to
+#the x and y of the player position
+block_front_direction = {}
+block_front_direction[0] = (0,-1) #up
+block_front_direction[1] = (1,0) #right
+block_front_direction[2] = (0,1) #down
+block_front_direction[3] = (-1,0) #left
 
 # up_arrow = pygame.image.load('./graphics/up_arrow.png')
 # right_arrow = pygame.image.load('./graphics/right_arrow.png')
@@ -118,8 +128,4 @@ class Player(object):
 # # avatar_dict[1] = right_arrow
 # # avatar_dict[2] = down_arrow
 # # avatar_dict[3] = left_arrow
-block_front_direction = {}
-block_front_direction[0] = (0,-1)
-block_front_direction[1] = (1,0)
-block_front_direction[2] = (0,1)
-block_front_direction[3] = (-1,0)
+

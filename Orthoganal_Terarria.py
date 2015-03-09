@@ -36,6 +36,8 @@ def main():
 					key_to_function_dict[event.key](world)
 				elif event.key == pygame.K_LSHIFT:
 					player.place(world, Wood)
+				elif event.key == pygame.K_p:
+					print world.chunk_list
 		# 		if event.key == pygame.K_LSHIFT:
 		# 			matt.place(wood)
 
@@ -49,6 +51,8 @@ def main():
 		SCREEN.blit(player.current_avatar, (9*64, 7*64))
 		SCREEN.blit(label, (300,300))
 		pygame.display.flip()
+	pygame.quit()
+	sys.exit()
 
 
 if __name__ == '__main__':

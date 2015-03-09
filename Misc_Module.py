@@ -25,3 +25,4 @@ def relative_position(position, dx, dy, xsize, ysize):
 		y = y + dy
 		
 	return [block_chunk, x, y]
+
