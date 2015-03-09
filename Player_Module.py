@@ -14,7 +14,7 @@ class Player(object):
 		self.avatar_up = pygame.image.load('graphics/up_arrow.png')
 		self.avatar_right = pygame.image.load('graphics/right_arrow.png')
 		self.avatar_down = pygame.image.load('graphics/down_arrow.png')
-		self.avatar_left = pygame.image.load('left_arrow.png')
+		self.avatar_left = pygame.image.load('graphics/left_arrow.png')
 		self.direction_to_graphic = {0: self.avatar_up, 1: self.avatar_right, 2: self.avatar_down, 3: self.avatar_left}
 		self.current_avatar = self.direction_to_graphic[self.direction]
 
