@@ -25,5 +25,5 @@ class Controller():
 				if event.key == pygame.K_ESCAPE:
 					self.exit_flag = True
 				elif event.key in self.dictionary:
-					function = self.dictionary[event.key]
-					self.player.function()
+					self.dictionary[event.key]()
+					
