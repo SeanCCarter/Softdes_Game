@@ -14,7 +14,7 @@ class Player(object):
 		self.avatar_up = pygame.image.load('graphics/up_arrow.png')
 		self.avatar_right = pygame.image.load('graphics/right_arrow.png')
 		self.avatar_down = pygame.image.load('graphics/down_arrow.png')
-		self.avatar_left = pygame.image.load('left_arrow.png')
+		self.avatar_left = pygame.image.load('graphics/left_arrow.png')
 		self.direction_to_graphic = {0: self.avatar_up, 1: self.avatar_right, 2: self.avatar_down, 3: self.avatar_left}
 		self.current_avatar = self.direction_to_graphic[self.direction]
 
@@ -29,7 +29,7 @@ class Player(object):
 			 0
 		   3 + 1
 		     2
-		     It's just modular arithmatic. If you add 4, it stays the same.
+		     It's just modular arithmetic. If you add 4, it stays the same.
 		     """
 		self.direction = (self.direction - 1)%4
 		self.current_avatar = self.direction_to_graphic[self.direction]
@@ -79,7 +79,7 @@ class Player(object):
 
 	def update_position(self, world, dx, dy):
 		"""
-		Returns the block x distance and y distance from the player's square
+		Sets the player's position to the block dx and dy from the player's current position.
 		"""
 		self.position = relative_position(self.position, dx, dy, world.chunk_width, world.chunk_height)
 
@@ -101,7 +101,7 @@ class Player(object):
 			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], Dirt())
 
 
-	def place(self, world, item):
+	def place(self, world, item=Wood):
 		'''Changes a block in the world to one that the player carries'''
 		if item not in self.inventory:
 			return False

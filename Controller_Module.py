@@ -8,13 +8,14 @@ Creates & otherwise defines the Controller class and its pygame-related function
 import pygame
 
 class Controller():
-	def __init__(self, dictionary, player):
+	def __init__(self, dictionary, player, world):
 		""" 
 		Initiates the controller, with the dictionary mapping its keys to the corresponding functions.
 		"""
 		self.dictionary = dictionary
 		self.player = player
 		self.exit_flag = False
+		self.world = world
 
 	def process_events(self):
 		"""
@@ -25,5 +26,5 @@ class Controller():
 				if event.key == pygame.K_ESCAPE:
 					self.exit_flag = True
 				elif event.key in self.dictionary:
-					self.dictionary[event.key]()
+					self.dictionary[event.key](self.world)
 					
