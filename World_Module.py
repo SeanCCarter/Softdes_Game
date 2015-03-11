@@ -39,7 +39,7 @@ class World(object):
 		'''When the player mines or places blocks, this function is used to change the world's square to the new one'''
 
 		position = relative_position(player_position, dx, dy, self.chunk_width, self.chunk_height)
-		block_chunk = position[0] #the block where the chunk should be located
+		block_chunk = position[0] #the chunk where the block should be located
 		x = position[1] #x location where the block should be located
 		y = position[2] #y location where the block should be located
 
@@ -59,7 +59,7 @@ class World(object):
 		if player_chunky > center_chunky:
 			for x in xrange(center_chunkx-1, center_chunkx+2):
 				self.loaded_world[(x, center_chunky-1)].save_data() #Saves the bottom three chunks
-				del(self.loaded_world[(x, center_chunky-1)])
+				del(self.loaded_world[(x, center_chunky-1)]) #deletes them
 				self.loaded_world[(x, center_chunky+2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky+2)) #Adds 3 new chunks on top
 			self.center_chunk[1] += 1
 
@@ -67,7 +67,7 @@ class World(object):
 		elif player_chunky < center_chunky:
 			for x in xrange(center_chunkx-1, center_chunkx+2):
 				self.loaded_world[(x, center_chunky+1)].save_data() #Saves the top three chunks
-				del(self.loaded_world[(x, center_chunky+1)])
+				del(self.loaded_world[(x, center_chunky+1)]) #delets them
 				self.loaded_world[(x, center_chunky-2)] = self.load_chunk(self.chunk_width, self.chunk_height, (x, center_chunky-2)) #Adds 3 new chunks on bottom
 			self.center_chunk[1] -= 1
 
@@ -75,7 +75,7 @@ class World(object):
 		elif player_chunkx > center_chunkx:
 			for y in xrange(center_chunky-1, center_chunky+2):
 				self.loaded_world[(center_chunkx-1,y)].save_data() #Saves the left three chunks
-				del self.loaded_world[(center_chunkx-1,y)]
+				del self.loaded_world[(center_chunkx-1,y)] #deletes them
 				self.loaded_world[(center_chunkx+2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx+2, y)) #Adds 3 chunks to the right
 			self.center_chunk[0] += 1
 
@@ -83,7 +83,7 @@ class World(object):
 		elif player_chunkx < center_chunkx:
 			for y in xrange(center_chunky-1, center_chunky+2):
 				self.loaded_world[(center_chunkx+1,y)].save_data() #Saves the rightmost three chunks
-				del self.loaded_world[(center_chunkx+1,y)]
+				del self.loaded_world[(center_chunkx+1,y)] #deletes them
 				self.loaded_world[(center_chunkx-2, y)] = self.load_chunk(self.chunk_width, self.chunk_height, (center_chunkx-2, y)) #Adds 3 on left
 			self.center_chunk[0] -= 1
 
@@ -96,7 +96,7 @@ class World(object):
 				self.loaded_world[(i,j)] = Chunk(self.chunk_width, self.chunk_height, (i,j))
 
 	def load_chunk(self, x_size, y_size, location):
-		if location in self.chunk_list: #Checks to see whether the player has already interacted with the chunk
+		if location in self.chunk_list: #Checks to see whether there is already a file for that chunk
 			return Chunk(x_size, y_size, location, True)
 		else:
 			self.chunk_list.append(location)
@@ -107,11 +107,14 @@ class Chunk(object):
 	'''A chunk is an x_size by y_size array of block values'''
 
 	def __init__(self, x_size, y_size, location, loadable = False):
-		#Self.location should be a tuple (x,y), although it isn't used yet.
+		#Self.
+		#Self.location should be a tuple (x,y)
 		self.location = location
 		self.chunk = make_blank_world(x_size, y_size)
-		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water()
+		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water() #chooses a random place to be water
 		if not loadable:
+			#This is our algorithm for generating a chunk. It's semi-rendom, but not partucularly interesting. Mostly it stops trees from getting too
+			#close together, and tries to group water if it can
 			for i in range(x_size-1):
 				for j in range(y_size-1):
 					seed = random.random()
@@ -141,15 +144,17 @@ class Chunk(object):
 	def save_data(self):
 		filename = "./chunks/("+str(self.location[0])+","+str(self.location[1])+").txt"
 		data_file = open(filename, "w")
-		dump([row for row in self.chunk], data_file)
+		dump([row for row in self.chunk], data_file) #Saves itself as a list of lists
 		data_file.close()
 
 
 	def get_block(self,x,y):
+		'''returns the block object at x, y'''
 		return self.chunk[x][y]
 
 
 	def change_block(self,x,y,block):
+		'''replaces the block at x, y'''
 		self.chunk[x][y] = block
 
 

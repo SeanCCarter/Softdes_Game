@@ -23,14 +23,13 @@ def main():
 
 	world = World(chunk_width = 10, chunk_height = 10)
 	player1 = Player((0,0), 0, 0)
-	player1_dict = {pygame.K_UP: player1.move_forward, pygame.K_LEFT: player1.turn_left, pygame.K_RIGHT: player1.turn_right, pygame.K_DOWN: player1.move_backward, pygame.K_SPACE: player1.mine, pygame.K_LSHIFT: player1.place}
-	player1_controller = Controller(player1_dict, player1, world)
+	player1_controller = Arrow_Controller(player1, world)
 
 	while not player1_controller.exit_flag:
 		player1_controller.process_events()
-		for event in pygame.event.get():
-			if event.type == pygame.KEYDOWN:
-				player1_controller.process_events()
+		# for event in pygame.event.get():
+		# 	if event.type == pygame.KEYDOWN:
+		# 		player1_controller.process_events()
 		label = font.render(str(player1),1,(0,0,0))
 		SCREEN.fill((255,255,255))
 

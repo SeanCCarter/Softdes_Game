@@ -70,10 +70,12 @@ class Player(object):
 
 
 	def block_in_front(self, world):
+		'''Returns the block object in front of the player'''
 		return world.get_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1])
 
 
 	def block_behind(self, world):
+		'''Returns the block object behind the player'''
 		return world.get_square(self.position, -block_front_direction[self.direction][0], -block_front_direction[self.direction][1])
 
 
