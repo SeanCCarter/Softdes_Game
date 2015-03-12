@@ -6,6 +6,11 @@ def relative_position(position, dx, dy, xsize, ysize):
 
 		dx and dy are the distance from the player in the x and y directions
 		xsize and ysize are the width and height of each chunk in the world
+
+	>>> print relative_position([(0,0), 0, 0], 0, 10, 10, 10 )
+	[(0, 1), 0, 0]
+	>>> print relative_position([(0,0), 0, 0], 0, -1, 10, 10 )
+	[(0, -1), 0, 9]
 	'''
 	block_chunk = position[0] #the current chunk
 	x = position[1]
@@ -31,3 +36,6 @@ def relative_position(position, dx, dy, xsize, ysize):
 		
 	return [block_chunk, x, y]
 
+if __name__ == '__main__':
+	import doctest
+	doctest.testmod()

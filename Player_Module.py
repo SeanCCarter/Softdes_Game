@@ -23,6 +23,9 @@ class Player(object):
 		return "("+str(self.position[0][0])+","+str(self.position[0][1])+")"+" "+str(self.position[1])+","+str(self.position[2])
 
 
+##################################################################
+#################### Change Player attributes ####################
+##################################################################
 	def turn_left(self, world):
 		"""  Rotates character counter-clockwise.
 			 The direction works like this:
@@ -69,6 +72,9 @@ class Player(object):
 			return False
 
 
+##################################################################
+################### Interact with the World ######################
+##################################################################
 	def block_in_front(self, world):
 		'''Returns the block object in front of the player'''
 		return world.get_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1])
@@ -111,6 +117,25 @@ class Player(object):
 			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], item())
 			self.remove_from_inventory(item)
 
+
+##################################################################
+##################### Save and Load Data #########################
+##################################################################
+	def save_data(self):
+		''' Player objects cannot be pickled, so this returns a list of all relavent data,
+			to be loaded back into the player when the world is loaded
+		'''
+		return [self.position, self.direction, self.inventory, self.hp]
+
+
+	def load_data(self, saved_data):
+		'''Takes in the information from save_data, and resets the player attributes appropriately'''
+		self.position = saved_data[0]
+		self.direction = saved_data[1]
+		self.inventory = saved_data[2]
+		self.hp = saved_data[3]
+
+
 #These directions encode the dx and dy from the player.
 #In otherwords, whether to add a positive or negative to
 #the x and y of the player position
@@ -120,14 +145,4 @@ block_front_direction[1] = (1,0) #right
 block_front_direction[2] = (0,1) #down
 block_front_direction[3] = (-1,0) #left
 
-# up_arrow = pygame.image.load('./graphics/up_arrow.png')
-# right_arrow = pygame.image.load('./graphics/right_arrow.png')
-# down_arrow = pygame.image.load('./graphics/down_arrow.png')
-# left_arrow = pygame.image.load('./graphics/left_arrow.png')
-
-# # avatar_dict = {}
-# # avatar_dict[0] = up_arrow
-# # avatar_dict[1] = right_arrow
-# # avatar_dict[2] = down_arrow
-# # avatar_dict[3] = left_arrow
 

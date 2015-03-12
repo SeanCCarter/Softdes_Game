@@ -114,7 +114,7 @@ class Chunk(object):
 		self.chunk[random.randint(2, x_size-2)][random.randint(2, y_size-2)] = Water() #chooses a random place to be water
 		if not loadable:
 			#This is our algorithm for generating a chunk. It's semi-rendom, but not partucularly interesting. Mostly it stops trees from getting too
-			#close together, and tries to group water if it can
+			#close together, and tries to group water if it can. Blank tiles act like water tiles.
 			for i in range(x_size-1):
 				for j in range(y_size-1):
 					seed = random.random()
