@@ -30,7 +30,7 @@ def main():
 		# for event in pygame.event.get():
 		# 	if event.type == pygame.KEYDOWN:
 		# 		player1_controller.process_events()
-		label = font.render(str(player1),1,(0,0,0))
+		# label = font.render(str(player1),1,(0,0,0))
 		SCREEN.fill((255,255,255))
 
 		visible_world = world.get_displayed_world(player1.position, [-9,9], [-7,7])
@@ -38,7 +38,7 @@ def main():
 			for j in range(len(visible_world[0])):
 				SCREEN.blit(visible_world[i][j], (j*64, i*64))
 		SCREEN.blit(player1.current_avatar, (9*64, 7*64))
-		SCREEN.blit(label, (300,300))
+		# SCREEN.blit(label, (300,300))
 		pygame.display.flip()
 	pygame.quit()
 	# sys.exit()
