@@ -44,6 +44,7 @@
 
 Project Overview:
 	For our project, we created a top-down version of Minecraft/Terraria (albeit with substantially limited features, when compared to those of the actual games themselves). This game creates a procedurally generated world, in which the player may move - walking around, harvesting blocks and (re-)placing them elsewhere.
+	This version of the game differs in several point from the in-class demo, which was the last commit. This one has an inventory.
 
 	Please note: game_drafting.py does NOT code for the current game. It was our prototype, so that you can examine the development of the game. The game itself is encoded in the following files:
 		Orthogonal_Terraria.py
@@ -64,9 +65,9 @@ To play:
 
 
 Controls:
-	The up and down arrow keys move your player forwards and backwards, while the left and right arrow keys rotate the player clockwise and counterclockwise
-
-	Space is the mine button (it eliminates trees) and left-shift is the button to place wood. You can only place as many woods as trees you have mined.
+	- The up and down arrow keys move your player forwards and backwards (in the direction that your character is facing), while the left and right arrow keys  rotate the player clockwise and counterclockwise
+	- Space is the mine button (it eliminates everything but dirt) and left-shift is the button to place items. You can only place as many items as you have mined.
+	- 'A' and 'D' move your selection in the inventory forwards and backwards (see the purple bar in the top left corner)
 ------------------------------------------------------------------------------
 
 *just not about this game.
