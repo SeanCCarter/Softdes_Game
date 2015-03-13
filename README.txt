@@ -61,6 +61,7 @@ Required Python Modules:
 
 
 To play:
+	If there is not folder called 'chunks' downloaded, create it. (It should be there, though)
 	Run Orthogonal_Terraria.py
 
 
