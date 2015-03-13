@@ -33,6 +33,7 @@ def Arrow_Controller(player, world):
 	#Sets up the controlls in a dictionary, with the keys being keypresses and the values being functions that controll the player
 	player_dict = {pygame.K_UP: player.move_forward, pygame.K_LEFT: player.turn_left, 
 					pygame.K_RIGHT: player.turn_right, pygame.K_DOWN: player.move_backward, 
-					pygame.K_SPACE: player.mine, pygame.K_LSHIFT: player.place}
+					pygame.K_SPACE: player.mine, pygame.K_LSHIFT: player.place,
+					pygame.K_d: player.inv_forward, pygame.K_a: player.inv_back}
 	return Controller(player_dict, player, world)
 

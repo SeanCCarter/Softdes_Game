@@ -3,10 +3,12 @@ This Module contains all of the atributes and methods of the player
 """
 import pygame
 from World_Module import *
+from Block_Module import *
 
 class Player(object):
 	def __init__(self, chunk = (0,0), x = 0, y =0):
 		self.inventory = {}
+		self.selected_inventory = None #The position in the inventory indicating what the player wants to place
 		self.max_hp = 5
 		self.hp = 5
 		self.position = [chunk, x, y]
@@ -20,12 +22,13 @@ class Player(object):
 
 
 	def __str__(self):
+		'''Returns the list encoding player position as a string'''
 		return "("+str(self.position[0][0])+","+str(self.position[0][1])+")"+" "+str(self.position[1])+","+str(self.position[2])
 
 
-##################################################################
-#################### Change Player attributes ####################
-##################################################################
+	##################################################################
+	#################### Change Player attributes ####################
+	##################################################################
 	def turn_left(self, world):
 		"""  Rotates character counter-clockwise.
 			 The direction works like this:
@@ -53,6 +56,8 @@ class Player(object):
 			self.inventory[item] += 1
 		else:
 			self.inventory[item] = 1
+		if self.selected_inventory == None:
+			self.selected_inventory = 0
 
 
 	def remove_from_inventory(self, item):
@@ -63,7 +68,22 @@ class Player(object):
 			self.inventory[item] -= 1
 			if self.inventory[item] == 0:
 				del self.inventory[item]
+				self.selected_inventory = 0
+			if not self.inventory:
+				self.selected_inventory = None
 
+	def inv_forward(self, world):
+		'''Moves the player inventory selection forward 1 space in the inventory'''
+		if self.selected_inventory != None:
+			self.selected_inventory = (self.selected_inventory + 1)%len(self.inventory)
+
+	def inv_back(self, world):
+		'''Moves the player inventory selection backward 1 space in the inventory'''
+		if self.selected_inventory != None:
+			if self.selected_inventory > 0:
+				self.selected_inventory -=1
+			else: 
+				self.selected_inventory = len(self.inventory) - 1
 
 	def check_inventory(self, item):
 		if item in self.inventory:
@@ -72,9 +92,9 @@ class Player(object):
 			return False
 
 
-##################################################################
-################### Interact with the World ######################
-##################################################################
+	##################################################################
+	################### Interact with the World ######################
+	##################################################################
 	def block_in_front(self, world):
 		'''Returns the block object in front of the player'''
 		return world.get_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1])
@@ -111,21 +131,22 @@ class Player(object):
 
 	def place(self, world, item=Wood):
 		'''Changes a block in the world to one that the player carries'''
+		keys = self.inventory.keys()
 		if item not in self.inventory:
 			return False
 		else:
-			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], item())
-			self.remove_from_inventory(item)
+			world.change_square(self.position, block_front_direction[self.direction][0],block_front_direction[self.direction][1], keys[self.selected_inventory]())
+			self.remove_from_inventory(keys[self.selected_inventory])
 
 
-##################################################################
-##################### Save and Load Data #########################
-##################################################################
+	##################################################################
+	############### Exchange Data with Controller ####################
+	##################################################################
 	def save_data(self):
 		''' Player objects cannot be pickled, so this returns a list of all relavent data,
 			to be loaded back into the player when the world is loaded
 		'''
-		return [self.position, self.direction, self.inventory, self.hp]
+		return [self.position, self.direction, self.inventory, self.hp, self.selected_inventory]
 
 
 	def load_data(self, saved_data):
@@ -134,6 +155,12 @@ class Player(object):
 		self.direction = saved_data[1]
 		self.inventory = saved_data[2]
 		self.hp = saved_data[3]
+		self.selected_inventory = saved_data[4]
+
+	def get_inventory(self):
+		'''Returns a list of tuples in the form (block graphic, #blocks) from the inventory'''
+		return [(pygame.transform.scale(item().loadgraphic(), (32,32)), self.inventory[item]) for item in self.inventory]
+
 
 
 #These directions encode the dx and dy from the player.

@@ -37,10 +37,10 @@ def Tree():
 	return Block('tree', 'tree.png', False, True, Wood)
 
 def Water():
-	return Block('water', 'water.png', False, False)
+	return Block('water', 'water.png', False, True, Water)
 
 def Grass():
-	return Block('grass', 'grass.png', True, False)
+	return Block('grass', 'grass.png', True, True, Grass)
 
 def Dirt():
 	return Block('dirt', 'dirt.png', True, False)

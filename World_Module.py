@@ -174,6 +174,6 @@ def make_blank_world(x_size, y_size):
 	"""
 	Creates an x-by-y list of lists of blank objects.
 	"""
-	blank_array = [[Blank() for j in range(y_size)] for i in range(x_size)]
+	blank_array = [[Water() for j in range(y_size)] for i in range(x_size)]
 	return blank_array
 
