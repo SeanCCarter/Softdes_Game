@@ -63,6 +63,7 @@ Required Python Modules:
 To play:
 	If there is not folder called 'chunks' downloaded, create it. (It should be there, though)
 	Run Orthogonal_Terraria.py
+	If you want to generate a new world, set loadworld to 'False' in the main section of the code. To load your previous world, don't forget to set it to true!
 
 
 Controls:
